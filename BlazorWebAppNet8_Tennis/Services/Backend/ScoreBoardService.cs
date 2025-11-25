@@ -58,24 +58,13 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
             {
                 if (game.PlayerOnePoints == game.PlayerTwoPoints)
                 {
-                    // Denna switch-sats kanske jag ska lägga i en egen funktion för lika poäng.
-                    switch (game.PlayerOnePoints)
+                    if(game.PlayerOnePoints <= 2)
                     {
-                        case 0:
-                            pointsText = "Love - All";
-                            break;
-                        case 1:
-                            pointsText = "Fifteen - All";
-                            break;
-                        case 2:
-                            pointsText = "Thirty - All";
-                            break;
-                        case 3:
-                            pointsText = "Deuce";
-                            break;
-                        default:
-                            pointsText = "Deuce";
-                            break;
+                        pointsText = PointToWord(game.PlayerOnePoints) + " - All";
+                    }
+                    else
+                    {
+                        pointsText = "Deuce";
                     }
                 }
                 else if (game.PlayerOnePoints > 3 && game.PlayerOnePoints > game.PlayerTwoPoints && diff >= 2)

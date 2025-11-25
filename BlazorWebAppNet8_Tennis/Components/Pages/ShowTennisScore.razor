@@ -1,0 +1,265 @@
+﻿@page "/showtennisscore"
+@inject HttpClient Http
+@inject TennisFrontendService TennisService
+
+@using BlazorWebAppNet8_Tennis.DTO.Match;
+@* @using BlazorWebAppNet8_Tennis.DTO.Response; *@
+@* @using BlazorWebAppNet8_Tennis.DTO.Request; *@
+@using BlazorWebAppNet8_Tennis.Services.Frontend
+
+<PageTitle>Tennis Score</PageTitle>
+
+<h3>Show Tennis Score</h3>
+
+@* <p role="status">Current count: @PointsText</p> *@
+
+<main style="
+    display: grid; 
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 5fr 2fr 5fr;
+    height:400px;
+    background-color: black; 
+    border: dashed; 
+    border-color: #ff9911; 
+border-width: 5px;
+    color: #ff9911;"
+    >
+    <div style="grid-column: 1 / 4;">
+        <p style="text-align:center; font-size: 70px;">@PointsText</p>
+    </div>
+
+    @* <div style="display: grid; grid-template-rows: 1fr 1fr; height: 100%;font-size: 40px"> *@
+    <div style="display: grid; grid-template-rows: 1fr 1fr; height: 100%; font-size: 40px; align-items:center;">
+
+        <div style="
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background-color: @( p1serves ? "#ff9911" : "#transparent");
+            color:            @( p1serves ? "#000000" : "#ff9911");
+        ">@matchState.PlayerOneName</div>
+        <div style="
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background-color: @(!p1serves ? "#ff9911" : "transparent");
+            color:            @(!p1serves ? "#000000" : "#ff9911");
+        ">
+            @matchState.PlayerTwoName
+        </div>
+    </div>
+
+    @* <div style="display: grid; grid-template-rows: 1fr 1fr; height: 100%; width: 30%"> *@
+    <div style="display: grid; grid-template-rows: 1fr 1fr; height: 100%; width: 30%; align-items:center;">
+        <div style="
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-size: 50px;
+        ">
+            @P1Total
+        </div>
+        <div style="
+            font-size: 50px;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        ">@P2Total</div>
+    </div>
+
+    <div id="test1" style="
+         display: flex;
+         flex-direction: column;
+         height: 100%;
+         overflow: hidden;
+     ">
+        <div id="test2" style="
+             display:flex;
+             align-items:center;
+             height: 100%;
+             overflow: hidden;
+             font-size: 50px;
+         ">
+            @for (int i = 0; i < matchState.PlayerOneSetScores.Count; i++)
+            {
+                <div class="test3" style="
+                     display: grid;
+                     grid-template-rows: 1fr 1fr;
+                     height: 100%;
+                     min-width: 50px;
+                     border-left: 4px solid #ff9911;
+                     border-right: 4px solid #ff9911;
+                     padding: 0px 50px;
+                 ">
+                    <div class="test4" style="
+                         display:flex;
+                         justify-content:center;
+                         align-items:center;
+                         height: 100%;
+                         border-bottom: 4px solid #ff9911;
+                         
+                     ">
+                        @matchState.PlayerOneSetScores[i]
+                    </div>
+                    <div class="test5" style="
+                         display:flex;
+                         justify-content:center;
+                         align-items:center;
+                         height: 100%;
+                         border-top: 4px solid #ff9911;
+                     ">
+                        @matchState.PlayerTwoSetScores[i]
+                    </div>
+                </div>
+            }
+
+            @* <div>@P1Sets</div> *@
+            
+        </div>
+        @* <div style="
+            display:flex;
+            justify-content:left;
+            align-items:center;
+            font-size: 50px;
+        ">
+            @P2Sets
+        </div> *@
+    </div>
+
+
+    <div style="grid-column: 1 / 4;">
+        <p style="text-align:center; font-size: 30px; color: lightgreen; margin: 0;">@WinText</p>
+    </div>
+
+    
+</main>
+
+<span>
+    <button @onclick="() => IncrementPlayer(1)">Player1 Scores</button>
+    <button @onclick="() => IncrementPlayer(2)">Player2 Scores</button>
+    <button @onclick="() => ToggleServe()">Change server</button>
+
+</span>
+@code {
+    // private MatchResponseDto matchResponseDto = new MatchResponseDto
+    //     {
+    //         PlayerOneName = "Player 1",
+    //         PlayerOneSetScores = new List<int>(),
+    //         PlayerOnePoints = 0,
+    //         PlayerTwoName = "Player 2",
+    //         PlayerTwoSetScores = new List<int>(),
+    //         PlayerTwoPoints = 0,
+    //     };
+
+    private bool p1serves = true;
+
+    private MatchStateDto matchState = new MatchStateDto
+    {
+        PlayerOneName = "Player 1",
+        PlayerTwoName = "Player 2",
+        PlayerOneSetScores = new List<int> { 0 },
+        PlayerTwoSetScores = new List<int> { 0 },
+        PlayerOnePoints = 0,
+        PlayerTwoPoints = 0,
+        SetsToWin = 3
+    };
+
+    private string PointsText = "Love-Love";
+    private string P1Total = "0";
+    private string P2Total = "0";
+    private string P1Sets = "  | 0";
+    private string P2Sets = "  | 0";
+    private string WinText = " ";
+
+
+    private void ToggleServe()
+    {
+        p1serves = !p1serves;
+    }
+
+    private async Task IncrementPlayer(int player)
+    {
+        matchState = await TennisService.PlayPoint(player, matchState);
+
+        PointsText = TennisService.PointsText;
+        P1Total = TennisService.SetsTotalTextP1;
+        P2Total = TennisService.SetsTotalTextP2;
+        P1Sets = TennisService.SetsListP1;
+        P2Sets = TennisService.SetsListP2;
+        WinText = TennisService.MatchResultText;
+
+        StateHasChanged();
+    }
+
+
+
+    // private async Task IncrementPlayer(int player)
+    // {
+    //     matchResponseDto = await TennisService.PlayPoint(player, matchResponseDto);
+
+    //     PointsText = TennisService.PointsText;
+    //     P1Total = TennisService.SetsTotalTextP1;
+    //     P2Total = TennisService.SetsTotalTextP2;
+    // }
+
+    // private async Task IncrementPlayer(int player)
+    // {
+    //     var request = CreateMatchRequest();
+
+    //     if(player == 1)
+    //     {
+    //         request.PlayerOnePoints++;
+    //     }else if(player == 2)
+    //     {
+    //         request.PlayerTwoPoints++;
+    //     }
+    //     else
+    //     {
+    //         throw new ArgumentOutOfRangeException(nameof(player), "can only take value 1 or 2.");
+    //     }
+
+
+    //     var response = await Http.PostAsJsonAsync($"api/match/add-point/{player}", request);
+
+
+    //     if (response.IsSuccessStatusCode)
+    //     {
+    //         matchResponseDto = await response.Content.ReadFromJsonAsync<MatchResponseDto>();
+
+    //         var scoreResponse = await Http.PostAsJsonAsync("api/match/scoreboard", matchResponseDto);
+    //         var scoreBoard = await scoreResponse.Content.ReadFromJsonAsync<ScoreBoardResponseDto>();
+
+    //         PointsText = scoreBoard.PointsText;
+    //         P1Total = scoreBoard.GamesText;
+    //         P2Total = scoreBoard.GamesText;
+    //         WinText = scoreBoard.SetsText;
+    //     }
+    //     else
+    //     {
+    //         PointsText = "Error: " + await response.Content.ReadAsStringAsync();
+    //     }
+    //     Console.WriteLine(PointsText);
+    // }
+
+
+
+
+
+    // private MatchRequestDto CreateMatchRequest()
+    // {
+    //     var request = new MatchRequestDto
+    //     {
+    //         SetsToWin = 3,
+    //         PlayerOneName = matchResponseDto.PlayerOneName,
+    //         PlayerOneSetScores = matchResponseDto.PlayerOneSetScores,
+    //         PlayerOnePoints = matchResponseDto.PlayerOnePoints,
+
+    //         PlayerTwoName = matchResponseDto.PlayerTwoName,
+    //         PlayerTwoSetScores = matchResponseDto.PlayerTwoSetScores,
+    //         PlayerTwoPoints = matchResponseDto.PlayerTwoPoints
+    //     };
+
+    //     return request;
+    // }
+
+}

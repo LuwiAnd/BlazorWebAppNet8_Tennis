@@ -9,7 +9,6 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
     
     public class MatchService
     {
-        //public MatchResponseDto AddPoint(int player, MatchRequestDto match)
         public MatchStateDto AddPoint(int player, MatchStateDto match)
         {
             // Kontrollera att matchen inte är slut:
@@ -69,7 +68,6 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
                 }
             }
 
-            //return ConvertToResponse(match);
             return match;
         }
 
@@ -84,7 +82,6 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
 
 
 
-        //public MatchResponseDto UpdateGames(MatchRequestDto match)
         public MatchStateDto UpdateGames(MatchStateDto match)
         {
             int diff = Math.Abs(match.PlayerOnePoints - match.PlayerTwoPoints);
@@ -93,7 +90,6 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
 
 
 
-            //bool shouldUpdateSet = false;
             bool isGameWon = false;
             
             
@@ -111,7 +107,6 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
                 return match;
 
 
-            //if(isGameWon && match.PlayerOnePoints > match.PlayerTwoPoints)
             if(match.PlayerOnePoints > match.PlayerTwoPoints)
             {
                 match.PlayerOneSetScores[match.PlayerOneSetScores.Count - 1]++;
@@ -124,14 +119,9 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
                 match.PlayerTwoPoints = 0;
             }
 
-            //if (isTiebreak)
-            //    match.IsTiebreak = false;
-
-            //return ConvertToResponse(match);
             return match;
         }
 
-        //public MatchResponseDto UpdateSets(MatchRequestDto match)
         public MatchStateDto UpdateSets(MatchStateDto match)
         {
             int currentPlayerOneGames = match.PlayerOneSetScores[match.PlayerOneSetScores.Count - 1];
@@ -214,7 +204,6 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
 
 
 
-        //public bool IsTiebreak(MatchRequestDto match)
         public bool IsTiebreak(MatchStateDto match)
         {
             int currentPlayerOneGameScore = match.PlayerOneSetScores[match.PlayerOneSetScores.Count - 1];
@@ -224,33 +213,6 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
             return isTiebreak;
         }
 
-        //public MatchResponseDto ConvertToResponse(
-        //    MatchRequestDto request,
-        //    bool isTiebreak = false,
-        //    string matchWonText = "",
-        //    string setWonText = "",
-        //    string gameWonText = "",
-        //    string pointsText = ""
-        //)
-        //{
-        //    return new MatchResponseDto
-        //    {
-        //        PlayerOneName = request.PlayerOneName,
-        //        PlayerTwoName = request.PlayerTwoName,
-
-        //        PlayerOnePoints = request.PlayerOnePoints,
-        //        PlayerTwoPoints = request.PlayerTwoPoints,
-
-        //        PlayerOneSetScores = request.PlayerOneSetScores?.ToList() ?? new List<int>(),
-        //        PlayerTwoSetScores = request.PlayerTwoSetScores?.ToList() ?? new List<int>(),
-
-                
-        //        IsTiebreak = isTiebreak,
-        //        MatchWonText = matchWonText,
-        //        SetWonText = setWonText,
-        //        GameWonText = gameWonText,
-        //        PointsText = pointsText
-        //    };
-        //}
+        
     }
 }

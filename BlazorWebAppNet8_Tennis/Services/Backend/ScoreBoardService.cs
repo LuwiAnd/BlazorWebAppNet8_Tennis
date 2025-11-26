@@ -12,14 +12,8 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
         {
             string points = CalculatePointsText(match);
 
-            //string SetsListP1 = match.PlayerOneSetScores[^1].ToString();
-            //string SetsListP2 = match.PlayerTwoSetScores[^1].ToString();
-
             string SetsListP1 = SetPointsToString(match.PlayerOneSetScores);
             string SetsListP2 = SetPointsToString(match.PlayerTwoSetScores);
-
-            //string setsTotalTextP1 = match.PlayerOneSetScores.Sum().ToString();
-            //string setsTotalTextP2 = match.PlayerTwoSetScores.Sum().ToString();
 
             string setsTotalTextP1 = CalculateSetsWon(match, 1).ToString();
             string setsTotalTextP2 = CalculateSetsWon(match, 2).ToString();
@@ -42,7 +36,6 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
 
 
         
-        //public string CalculatePointsText(GameRequestDto game)
         public string CalculatePointsText(MatchStateDto game)
         {
             string pointsText = "";
@@ -50,10 +43,9 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
             int diff = Math.Abs(game.PlayerOnePoints - game.PlayerTwoPoints);
             int max = Math.Max(game.PlayerOnePoints, game.PlayerTwoPoints);
 
-            bool gameOver = false;
+            //bool gameOver = false;
             bool isTiebreak = IsTiebreak(game);
 
-            //if (!game.IsTiebreak)
             if (!isTiebreak)
             {
                 if (game.PlayerOnePoints == game.PlayerTwoPoints)
@@ -70,12 +62,12 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
                 else if (game.PlayerOnePoints > 3 && game.PlayerOnePoints > game.PlayerTwoPoints && diff >= 2)
                 {
                     pointsText = $"{game.PlayerOneName} wins game.";
-                    gameOver = true;
+                    //gameOver = true;
                 }
                 else if (game.PlayerTwoPoints > 3 && game.PlayerTwoPoints > game.PlayerOnePoints && diff >= 2)
                 {
                     pointsText = $"{game.PlayerTwoName} wins game.";
-                    gameOver = true;
+                    //gameOver = true;
                 }
                 else if (diff == 1 && (game.PlayerOnePoints > 3 || game.PlayerTwoPoints > 3))
                 {
@@ -93,12 +85,12 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
                 if (game.PlayerOnePoints >= 7 && diff >= 2)
                 {
                     pointsText = $"{game.PlayerOneName} wins game.";
-                    gameOver = true;
+                    //gameOver = true;
                 }
                 else if (game.PlayerTwoPoints >= 7 && diff >= 2)
                 {
                     pointsText = $"{game.PlayerTwoName} wins game.";
-                    gameOver = true;
+                    //gameOver = true;
                 }
                 else
                 {
@@ -194,19 +186,7 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
             return result;
         }
 
-        public string CalculateGamesText(MatchResponseDto match)
-        {
-            string playerOneGameText = match.PlayerOneGameScores.Sum().ToString();
-            string playerTwoGameText = match.PlayerTwoGameScores.Sum().ToString();
-            return playerOneGameText + "\n" + playerTwoGameText;
-        }
-
-        public string CalculateSetsText(MatchResponseDto match)
-        {
-            string playerOneSetText = match.PlayerOneSetScores.Sum().ToString();
-            string playerTwoSetText = match.PlayerTwoSetScores.Sum().ToString();
-            return playerOneSetText + "\n" + playerTwoSetText;
-        }
+        
 
         public int CalculateSetsWon(MatchStateDto match, int player)
         {

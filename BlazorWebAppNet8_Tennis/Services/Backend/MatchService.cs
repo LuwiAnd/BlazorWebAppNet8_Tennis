@@ -12,6 +12,32 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
         //public MatchResponseDto AddPoint(int player, MatchRequestDto match)
         public MatchStateDto AddPoint(int player, MatchStateDto match)
         {
+            // Kontrollera att matchen inte är slut:
+            int p1SetWins = 0;
+            int p2SetWins = 0;
+
+            for (int i = 0; i < match.PlayerOneSetScores.Count; i++)
+            {
+                if (
+                    IsSetWon(match.PlayerOneSetScores[i], match.PlayerTwoSetScores[i])
+                    &&
+                    match.PlayerOneSetScores[i] > match.PlayerTwoSetScores[i])
+                {
+                    p1SetWins++;
+                }
+                else if(IsSetWon(match.PlayerOneSetScores[i], match.PlayerTwoSetScores[i]))
+                {
+                    p2SetWins++;
+                }
+            }
+
+            if (Math.Max(p1SetWins, p2SetWins) >= match.SetsToWin)
+                return match;
+
+            // ---- Slut på kontroll ---
+
+
+
             int diff = Math.Abs( match.PlayerOnePoints - match.PlayerTwoPoints );
             int max = Math.Max(match.PlayerOnePoints, match.PlayerTwoPoints);
             bool isTiebreak = IsTiebreak(match);
@@ -114,17 +140,17 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
             int diff = Math.Abs(currentPlayerOneGames - currentPlayerTwoGames);
             int max = Math.Max(currentPlayerOneGames, currentPlayerTwoGames);
 
-            //bool shouldUpdateSets = false;
-            bool isSetWon = false;
+            //bool isSetWon = false;
+            //if(
+            //    (diff >= 2 && max >= 6)
+            //    ||
+            //    max == 7
+            //)
+            //{
+            //    isSetWon = true;
+            //}
+            bool isSetWon = IsSetWon(currentPlayerOneGames, currentPlayerTwoGames);
 
-            if(
-                (diff >= 2 && max >= 6)
-                ||
-                max == 7
-            )
-            {
-                isSetWon = true;
-            }
 
             if (isSetWon)
             {
@@ -133,11 +159,13 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
 
                 for (int i = 0; i < match.PlayerOneSetScores.Count; i++)
                 {
-                    if (match.PlayerOneSetScores[i] > match.PlayerTwoSetScores[i])
+                    if (IsSetWon(match.PlayerOneSetScores[i], match.PlayerTwoSetScores[i]) &&
+                        match.PlayerOneSetScores[i] > match.PlayerTwoSetScores[i]
+                    )
                     {
                         playerOneSetWins++;
                     }
-                    else
+                    else if(IsSetWon(match.PlayerOneSetScores[i], match.PlayerTwoSetScores[i]))
                     {
                         playerTwoSetWins++;
                     }
@@ -156,7 +184,21 @@ namespace BlazorWebAppNet8_Tennis.Services.Backend
         }
 
 
+        private bool IsSetWon(int p1Score, int p2Score)
+        {
+            int diff = Math.Abs(p1Score - p2Score);
+            int max = Math.Max(p1Score, p2Score);
+            if(
+                max >= 6 && diff >= 2
+                ||
+                max >= 7
+            )
+            {
+                return true;
+            }
 
+            return false;
+        }
 
 
 
